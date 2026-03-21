@@ -13,6 +13,7 @@ import {
   SHEEP_REPRODUCTION_CHANCE,
   SHEEP_REPRODUCTION_ENERGY_TRANSFER,
   Speed,
+  setRandomSeed,
   tickDelay,
   tickWorld,
   W,
@@ -31,6 +32,7 @@ function formatInspection(inspection: CellInspection): string {
   return [
     `inspect cell (${inspection.row}, ${inspection.col})`,
     `grass: ${inspection.grass.toFixed(1)}%`,
+    `wall: ${inspection.wall ? 'yes' : 'no'}`,
     ...animalLines,
   ].join('\n')
 }
@@ -42,6 +44,8 @@ export default function App() {
   const lastPaintedRef = useRef<string | null>(null)
   const [mode, setMode] = useState<Mode>('mud')
   const [speed, setSpeed] = useState<Speed>(1)
+  const [seedInput, setSeedInput] = useState('12345')
+  const [seedStatus, setSeedStatus] = useState('rng: random')
   const [stats, setStats] = useState(createEmptyStats())
   const [inspection, setInspection] = useState<CellInspection | null>(null)
 
@@ -142,6 +146,35 @@ export default function App() {
     lastPaintedRef.current = null
   }
 
+  function createWorldPreservingWalls(): World {
+    const preservedWalls = worldRef.current.walls.map((row) => row.slice())
+    const nextWorld = createWorld()
+    nextWorld.walls = preservedWalls
+    return nextWorld
+  }
+
+  function resetWorldWithSeed() {
+    const parsed = Number.parseInt(seedInput, 10)
+    if (!Number.isFinite(parsed)) {
+      setSeedStatus('rng: invalid seed')
+      return
+    }
+
+    setRandomSeed(parsed)
+    worldRef.current = createWorldPreservingWalls()
+    setInspection(null)
+    setSeedStatus(`rng: seeded (${Math.floor(parsed) >>> 0})`)
+    refresh()
+  }
+
+  function resetWorldRandom() {
+    setRandomSeed(null)
+    worldRef.current = createWorldPreservingWalls()
+    setInspection(null)
+    setSeedStatus('rng: random')
+    refresh()
+  }
+
   return (
     <div style={{ fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem' }}>
       <canvas
@@ -173,6 +206,19 @@ export default function App() {
         <button type="button" onClick={() => setSpeed(3)} style={{ padding: '0.4rem 0.8rem', border: '1px solid #888', background: speed === 3 ? '#ddd' : '#fff', cursor: 'pointer' }}>3</button>
         <button type="button" onClick={() => setSpeed(4)} style={{ padding: '0.4rem 0.8rem', border: '1px solid #888', background: speed === 4 ? '#ddd' : '#fff', cursor: 'pointer' }}>4</button>
         <button type="button" onClick={() => setSpeed(5)} style={{ padding: '0.4rem 0.8rem', border: '1px solid #888', background: speed === 5 ? '#ddd' : '#fff', cursor: 'pointer' }}>5</button>
+      </div>
+
+      <div style={{ marginTop: '0.6rem', display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <span>seed</span>
+        <input
+          type="text"
+          value={seedInput}
+          onChange={(e) => setSeedInput(e.target.value)}
+          style={{ padding: '0.4rem 0.5rem', border: '1px solid #888', borderRadius: '6px', width: '8rem' }}
+        />
+        <button type="button" onClick={resetWorldWithSeed} style={{ padding: '0.4rem 0.8rem', border: '1px solid #888', background: '#fff', cursor: 'pointer' }}>reset seeded</button>
+        <button type="button" onClick={resetWorldRandom} style={{ padding: '0.4rem 0.8rem', border: '1px solid #888', background: '#fff', cursor: 'pointer' }}>reset random</button>
+        <span style={{ fontSize: '0.9rem', color: '#444' }}>{seedStatus}</span>
       </div>
 
       <div style={{ marginTop: '0.6rem', fontSize: '0.95rem' }}>

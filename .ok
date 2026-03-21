@@ -1,0 +1,2 @@
+npm run # see available scripts
+". .\functions.ps1" | clipp; "paste, enter";

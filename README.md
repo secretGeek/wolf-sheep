@@ -2,7 +2,7 @@
 
 A small ecosystem simulation built with React + TypeScript + Vite.
 
-Sheep move around and graze, wolves hunt sheep, grass regrows, and stone walls can be used to divide the world in separate, or semi-separate paddocks.
+Sheep move around and graze, wolves hunt sheep, grass regrows, and stone walls can be used to divide the world into separate, or semi-separate, paddocks.
 
 [play it live](https://secretgeek.github.io/wolf-sheep/)
 
@@ -51,7 +51,7 @@ npm run preview
 
 ## Notes
 
-- The simulation currently uses `Math.random()`, so runs are non-deterministic.
+- The simulation supports both random runs and seeded deterministic runs (use the seed controls in the UI).
 - Tuning constants for movement, aging, energy, and reproduction are in `src/simulation.ts`.
 
 ## Discussion
@@ -67,3 +67,7 @@ I'd like to use a different approach entirely. Something less mathematical and m
 For example, I'm trying to find an approach that involves gently evolving from "no predatory behaviour", to "just a little bit of light predation", such that predator and prey can co-evolve.
 
 I'll definitely want to add in more (gene-controlled) behaviour for the sheep, such as flocking, warning of predators, running from predators etc.
+
+## gh-pages and github actions
+
+Now that I'm using `Actions` to do the `gh-pages` deploy, I can remove the deploy/predeploy scripts from `package.json`, and remove the gh-pages dependency.
