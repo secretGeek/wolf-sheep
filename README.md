@@ -4,7 +4,7 @@ A small ecosystem simulation built with React + TypeScript + Vite.
 
 Sheep move around and graze, wolves hunt sheep, grass regrows, and stone walls can be used to divide the world in separate, or semi-separate paddocks.
 
-[play it live](https://secretgeek.github.io/wolf-sheep/) (coming soon)
+[play it live](https://secretgeek.github.io/wolf-sheep/)
 
 I've built similar things before, see:
 
